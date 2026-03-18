@@ -14,13 +14,22 @@ export default function ImageUpload({ onResultsChange }: ImageUploadProps) {
   const [originalPreviewUrl, setOriginalPreviewUrl] = useState<string | null>(null)
   const [currentStep, setCurrentStep] = useState(0)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isDragActive, setIsDragActive] = useState(false)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null
+
+    if (selectedFile && !selectedFile.type.startsWith("image/")) {
+      setErrorMessage("Please upload a valid image file.")
+      return
+    }
+
+    setErrorMessage(null)
     setFile(selectedFile)
     setCurrentStep(selectedFile ? 1 : 0)
+    onResultsChange(null)
 
     if (selectedFile) {
       setOriginalPreviewUrl(URL.createObjectURL(selectedFile))
@@ -36,6 +45,7 @@ export default function ImageUpload({ onResultsChange }: ImageUploadProps) {
 
     const droppedFile = event.dataTransfer.files?.[0]
     if (droppedFile && droppedFile.type.startsWith("image/")) {
+      setErrorMessage(null)
       setFile(droppedFile)
       const reader = new FileReader()
       reader.onload = (e) => {
@@ -43,8 +53,12 @@ export default function ImageUpload({ onResultsChange }: ImageUploadProps) {
       }
       reader.readAsDataURL(droppedFile)
       setCurrentStep(1)
+      onResultsChange(null)
+      return
     }
-  }, [])
+
+    setErrorMessage("Only image files are supported.")
+  }, [onResultsChange])
 
   const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault()
@@ -60,13 +74,16 @@ export default function ImageUpload({ onResultsChange }: ImageUploadProps) {
 
   const handleAnalyze = useCallback(async () => {
     if (!file) return
+
+    setErrorMessage(null)
     setIsAnalyzing(true)
 
     const formData = new FormData()
     formData.append("image", file)
 
     try {
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/predict_all`;
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+      const apiUrl = `${apiBaseUrl}/predict`
 
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -74,7 +91,16 @@ export default function ImageUpload({ onResultsChange }: ImageUploadProps) {
       })
 
       if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`)
+        let message = `Server error: ${response.status}`
+        try {
+          const errorPayload = await response.json()
+          if (errorPayload?.detail) {
+            message = String(errorPayload.detail)
+          }
+        } catch {
+          // Keep fallback message when non-JSON payload is returned.
+        }
+        throw new Error(message)
       }
 
       const data = await response.json()
@@ -82,7 +108,7 @@ export default function ImageUpload({ onResultsChange }: ImageUploadProps) {
       setCurrentStep(2)
     } catch (err) {
       console.error("Prediction failed:", err)
-      alert("Prediction failed. Check backend logs.")
+      setErrorMessage(err instanceof Error ? err.message : "Prediction failed. Please try again.")
     } finally {
       setIsAnalyzing(false)
     }
@@ -93,6 +119,7 @@ export default function ImageUpload({ onResultsChange }: ImageUploadProps) {
     setOriginalPreviewUrl(null)
     setCurrentStep(0)
     setIsAnalyzing(false)
+    setErrorMessage(null)
     onResultsChange(null)
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
@@ -103,6 +130,7 @@ export default function ImageUpload({ onResultsChange }: ImageUploadProps) {
     setFile(null)
     setOriginalPreviewUrl(null)
     setCurrentStep(0)
+    setErrorMessage(null)
     onResultsChange(null)
      if (fileInputRef.current) {
       fileInputRef.current.value = ""
@@ -113,42 +141,49 @@ export default function ImageUpload({ onResultsChange }: ImageUploadProps) {
     <div>
       <Stepper currentStep={currentStep} />
 
+      {errorMessage && (
+        <div className="mb-5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+          <i className="fas fa-triangle-exclamation mr-2"></i>
+          {errorMessage}
+        </div>
+      )}
+
       {!originalPreviewUrl ? (
         <div
-          className={`max-w-lg mx-auto border-2 border-dashed rounded-xl p-10 text-center mb-5 cursor-pointer transition-all duration-300 relative ${
-            isDragActive ? "border-green-600 bg-green-50" : "border-gray-300 hover:border-green-600 hover:bg-green-50"
+          className={`relative mx-auto mb-5 max-w-lg cursor-pointer rounded-md border-2 border-dashed p-8 text-center transition-all duration-300 md:p-10 ${
+            isDragActive ? "border-sky-600 bg-sky-50" : "border-slate-300 hover:border-sky-600 hover:bg-sky-50"
           }`}
           onClick={() => fileInputRef.current?.click()}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
         >
-          <div className="text-5xl text-green-600 mb-4">
+          <div className="mb-4 text-5xl text-sky-700">
             <i className="fas fa-cloud-upload-alt"></i>
           </div>
           <div className="mb-4">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Drop image here</h3>
-            <p className="text-sm text-gray-500">or click to browse files from your device</p>
+            <h3 className="mb-2 text-lg font-semibold text-slate-900">Drop image here</h3>
+            <p className="text-sm text-slate-500">or click to browse files from your device</p>
           </div>
           <div className="flex justify-center gap-2">
-            <span className="bg-gray-200 px-3 py-1 rounded-full text-xs text-gray-600">JPEG</span>
-            <span className="bg-gray-200 px-3 py-1 rounded-full text-xs text-gray-600">JPG</span>
-            <span className="bg-gray-200 px-3 py-1 rounded-full text-xs text-gray-600">PNG</span>
+            <span className="rounded-sm bg-slate-200 px-3 py-1 text-xs text-slate-700">JPEG</span>
+            <span className="rounded-sm bg-slate-200 px-3 py-1 text-xs text-slate-700">JPG</span>
+            <span className="rounded-sm bg-slate-200 px-3 py-1 text-xs text-slate-700">PNG</span>
           </div>
           <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
         </div>
       ) : (
-        <div className="relative max-w-lg mx-auto mb-6 rounded-xl overflow-hidden shadow-md">
+        <div className="relative mx-auto mb-6 max-w-lg overflow-hidden rounded-md border border-slate-200 shadow-sm">
           <Image
             src={originalPreviewUrl}
             alt="Snake image preview"
             width={400}
             height={300}
-            className="w-full h-auto max-h-80 object-contain rounded-xl"
+            className="h-auto max-h-80 w-full rounded-md object-contain"
           />
           <div className="absolute top-3 right-3">
             <div
-              className="w-9 h-9 rounded-full bg-white/80 hover:bg-white text-red-500 flex items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105"
+              className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-sm bg-white/85 text-red-500 transition-all duration-300 hover:scale-105 hover:bg-white"
               onClick={handleRemoveImage}
               title="Remove image"
             >
@@ -158,19 +193,19 @@ export default function ImageUpload({ onResultsChange }: ImageUploadProps) {
         </div>
       )}
 
-      <div className="flex justify-center gap-4 mt-6">
+      <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
         <button
-          className={`flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300 shadow-md relative ${
+          className={`relative flex items-center justify-center gap-2 rounded-md px-6 py-3 font-semibold transition-all duration-300 shadow-md ${
             isAnalyzing || currentStep !== 1
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-green-600 hover:bg-green-700 text-white hover:-translate-y-0.5 hover:shadow-lg"
+              ? "cursor-not-allowed bg-slate-300 text-slate-600"
+              : "bg-sky-700 text-white hover:-translate-y-0.5 hover:bg-sky-800 hover:shadow-lg"
           }`}
           onClick={handleAnalyze}
           disabled={!file || isAnalyzing || currentStep !== 1}
         >
           {isAnalyzing ? (
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <div className="h-5 w-5 rounded-sm border-2 border-white/30 border-t-white animate-spin"></div>
               <span>Analyzing...</span>
             </div>
           ) : (
@@ -181,7 +216,7 @@ export default function ImageUpload({ onResultsChange }: ImageUploadProps) {
           )}
         </button>
         <button
-          className="px-6 py-3 rounded-full font-semibold border-2 border-gray-300 text-gray-600 hover:border-gray-600 hover:text-gray-900 transition-all duration-300"
+          className="rounded-md border-2 border-slate-300 px-6 py-3 font-semibold text-slate-700 transition-all duration-300 hover:border-slate-500 hover:text-slate-900"
           onClick={handleReset}
         >
           <i className="fas fa-redo mr-2"></i>

@@ -7,14 +7,14 @@ export default function HowToUseSection() {
   return (
     <Accordion title="How to Use" icon="fas fa-question-circle">
       <p className="text-sm text-gray-700 mb-6">
-        The Philippine Snake Classification System is designed to be straightforward and easy to use, particularly in
-        emergency situations when quick identification is necessary.
+        SnakeSight is designed for fast, structured use during field assessment and clinical intake, where early
+        species identification can accelerate first-aid triage and antivenom pathway decisions.
       </p>
 
       <div className="space-y-5">
         {HOW_TO_USE_STEPS.map((step) => (
           <div key={step.number} className="flex items-start">
-            <div className="w-9 h-9 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-semibold text-base mr-4 flex-shrink-0">
+            <div className="mr-4 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-sm bg-sky-100 text-base font-semibold text-sky-700">
               {step.number}
             </div>
             <div>

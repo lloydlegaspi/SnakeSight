@@ -1,7 +1,10 @@
-flask
-flask-cors
+fastapi
+uvicorn[standard]
+python-multipart
 tensorflow
 pillow
 matplotlib
 numpy
 python-dotenv
+pytest
+httpx

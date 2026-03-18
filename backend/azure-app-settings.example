@@ -1,10 +1,10 @@
-# FastAPI server settings
+# Azure App Service (Linux) application settings
+SCM_DO_BUILD_DURING_DEPLOYMENT=true
+WEBSITES_PORT=8000
+PYTHONUNBUFFERED=1
 FASTAPI_HOST=0.0.0.0
 FASTAPI_PORT=8000
-FASTAPI_RELOAD=True
-
-# Paths to the AttenDenseNet model and metadata
 ATTENDENSENET_MODEL_PATH=model/attendensenet.keras
 ATTENDENSENET_LAST_CONV=cbam4_residual
 METADATA_PATH=model/metadata.json
-ANNOTATIONS_DIR=annotations
+ANNOTATIONS_DIR=annotations/annotations

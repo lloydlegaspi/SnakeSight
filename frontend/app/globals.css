@@ -3,27 +3,55 @@
 @tailwind utilities;
 
 :root {
-  --primary: #2c9f42;
-  --primary-light: #e8f5e9;
-  --primary-dark: #1b8a2f;
-  --secondary: #5c88da;
-  --secondary-light: #e7effd;
-  --secondary-dark: #4a6fb8;
+  --primary: #0f3955;
+  --primary-light: #eaf6ff;
+  --primary-dark: #0a2a3f;
+  --secondary: #1c6ea4;
+  --secondary-light: #dcefff;
+  --secondary-dark: #0f4f7a;
+  --accent: #2a89c9;
+  --accent-light: #e0f4ff;
+  --accent-dark: #165c8b;
+  --muted: #f2f8fc;
+  --muted-dark: #b9ccda;
   --danger: #dc3545;
   --danger-light: #f8d7da;
   --warning: #ffc107;
   --warning-light: #fff3cd;
-  --text-dark: #212529;
-  --text-medium: #495057;
-  --text-light: #6c757d;
-  --bg-light: #f8f9fa;
+  --text-dark: #102132;
+  --text-medium: #24445e;
+  --text-light: #4e6b83;
+  --bg-light: #f4faff;
   --white: #ffffff;
-  --gray-100: #f8f9fa;
-  --gray-200: #e9ecef;
-  --gray-300: #dee2e6;
+  --gray-100: #f4faff;
+  --gray-200: #deebf7;
+  --gray-300: #c5d9ea;
+  --radius: 0.3rem;
   --border-radius: 12px;
   --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   --transition: all 0.3s ease;
+}
+
+.dark {
+  --primary: #7bc8ff;
+  --primary-light: #1c4c6d;
+  --primary-dark: #e6f5ff;
+  --secondary: #3d8dc0;
+  --secondary-light: #245d84;
+  --secondary-dark: #cbeaff;
+  --accent: #5db4eb;
+  --accent-light: #29658f;
+  --accent-dark: #d8f1ff;
+  --muted: #1b2e3f;
+  --muted-dark: #90abc1;
+  --text-dark: #eaf4fb;
+  --text-medium: #bfd4e3;
+  --text-light: #8ca7ba;
+  --bg-light: #06131d;
+  --gray-100: #06131d;
+  --gray-200: #0d2233;
+  --gray-300: #17384f;
+  --radius: 0.3rem;
 }
 
 * {

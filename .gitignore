@@ -31,3 +31,14 @@ backend/model
 backend/annotations
 backend/images
 __pycache__
+backend/*.pyc
+backend/.env
+backend/annotations
+backend/venv
+backend/venv/
+
+
+.vscode
+
+
+

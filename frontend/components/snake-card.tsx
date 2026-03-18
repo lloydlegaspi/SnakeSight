@@ -12,13 +12,13 @@ export default function SnakeCard({ species }: SnakeCardProps) {
   const statusBgClass = isVenomous ? "bg-red-100" : "bg-green-100"
 
   return (
-    <div className="rounded-xl overflow-hidden shadow-md bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+    <div className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
       <div className={`p-4 flex justify-between items-center ${bgColorClass}`}>
         <div>
           <h4 className={`text-base font-semibold ${textColorClass} mb-1`}>{species.name}</h4>
           <p className="text-xs italic text-gray-600">{species.scientificName}</p>
         </div>
-        <span className={`text-xs font-bold ${textColorClass} ${statusBgClass} px-2 py-1 rounded-full`}>
+        <span className={`rounded-sm px-2 py-1 text-xs font-bold ${textColorClass} ${statusBgClass}`}>
           {species.status}
         </span>
       </div>

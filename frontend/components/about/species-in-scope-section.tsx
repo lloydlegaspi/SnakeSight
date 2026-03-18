@@ -27,7 +27,7 @@ export default function SpeciesInScopeSection() {
 
       {/* Non-venomous Species */}
       <div>
-        <h3 className="flex items-center gap-2 text-lg font-bold text-green-600 mb-4">
+        <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-sky-700">
           <i className="fas fa-check-circle"></i> Non-venomous Species
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

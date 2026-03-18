@@ -5,11 +5,13 @@ import LimitationsSection from "@/components/about/limitations-section"
 
 export default function AboutPage() {
   return (
-    <div className="max-w-6xl mx-auto">
+    <main className="w-full space-y-6 px-4 py-6 md:px-12 md:py-8 lg:px-24">
+
+
       <AboutSection />
       <HowToUseSection />
       <SpeciesInScopeSection />
       <LimitationsSection />
-    </div>
+    </main>
   )
 }

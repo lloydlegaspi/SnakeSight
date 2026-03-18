@@ -5,8 +5,13 @@ import Header from "@/components/header"
 import Footer from "@/components/footer"
 
 export const metadata: Metadata = {
-  title: "Philippine Snake Classification System",
-  description: "AI-powered snake identification system",
+  title: "SnakeSight",
+  description: "AI-Powered Philippine Snake Detection",
+  icons: {
+    icon: "/img/snakesight-logo.png",
+    shortcut: "/img/snakesight-logo.png",
+    apple: "/img/snakesight-logo.png",
+  },
 }
 
 export default function RootLayout({
@@ -15,14 +20,18 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
       </head>
-      <body className="bg-gray-100 text-gray-900 leading-relaxed">
-        <Header />
-        <div className="max-w-screen-xl mx-auto p-5">{children}</div>
-        <Footer />
+      <body suppressHydrationWarning className="min-h-screen flex flex-col bg-background text-foreground leading-relaxed">
+        <div className="w-full px-4 pt-4 md:px-12 md:pt-6 lg:px-24">
+          <Header />
+        </div>
+        <main className="w-full flex-1">{children}</main>
+        <div className="w-full px-4 pb-4 md:px-12 md:pb-6 lg:px-24">
+          <Footer />
+        </div>
       </body>
     </html>
   )

@@ -22,8 +22,8 @@ except FileNotFoundError:
     print("Warning: metadata.json not found.")
 
 # --- Model Loading ---
-def load_all_models():
-    print("Loading models...")
+def load_attendensenet_model():
+    print("Loading AttenDenseNet model...")
     custom_objects = {
         "GlobalMeanPoolChannel": GlobalMeanPoolChannel,
         "GlobalMaxPoolChannel": GlobalMaxPoolChannel,
@@ -32,17 +32,19 @@ def load_all_models():
         "cbam_block": cbam_block,
     }
 
-    attendensenet_path = os.getenv("ATTENDENSENET_MODEL_PATH", "model/attendensenet_v9.keras")
-    densenet_path = os.getenv("DENSENET_MODEL_PATH", "model/baseline_densenet_85.keras")
+    default_cbam_path = os.getenv("ATTENDENSENET_MODEL_PATH", "model/attendensenet.keras")
 
-    attendensenet_model = load_model("model/attendensenet_87.keras", custom_objects=custom_objects, compile=False)
-    densenet_model = load_model("model/baseline_densenet_85.keras", custom_objects=custom_objects, compile=False)
+    if not os.path.exists(default_cbam_path):
+        raise FileNotFoundError(f"AttenDenseNet model not found at {default_cbam_path}")
 
-    print("All models loaded successfully.")
-    return {
-        "attendensenet": {"model": attendensenet_model, "last_conv": "cbam4_residual"},
-        "densenet": {"model": densenet_model, "last_conv": "conv5_block16_concat"}
+    model_bundle = {
+        "model": load_model(default_cbam_path, custom_objects=custom_objects, compile=False),
+        "last_conv": os.getenv("ATTENDENSENET_LAST_CONV", "cbam4_residual"),
+        "name": "AttenDenseNet",
     }
+
+    print(f"Loaded AttenDenseNet model: {default_cbam_path}")
+    return model_bundle
 
 # --- Core Logic (Functions adapted from original scripts) ---
 def preprocess_image(pil_img):
