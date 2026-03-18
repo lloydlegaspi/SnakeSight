@@ -34,6 +34,8 @@ jobs:
           ###### End of Repository/Build Configurations ######
           app_build_command: 'npm run build'
           api_build_command: 'rm -rf ./node_modules/@next/swc-* && rm -rf ./.next/cache'
+        env: 
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
